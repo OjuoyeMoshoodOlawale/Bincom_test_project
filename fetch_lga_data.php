@@ -21,6 +21,8 @@ if(isset($_POST['lga'])){
                         // party abbrivation 
                         while($row = $result_party_abbr->fetch_assoc()) {
                             array_push($party_abbr,$row["party_abbreviation"]);
+                            $temp_name='Total_'.$row["party_abbreviation"];
+                        $$temp_name=0;
                             ?>
                             
                             <th><?=$row["party_abbreviation"]?></th>
@@ -35,6 +37,7 @@ if(isset($_POST['lga'])){
             // SQL query 
             $sql = "SELECT a.`polling_unit_uniqueid`,a.`party_abbreviation`,a.`party_score`,p.`polling_unit_name`, p.lga_id FROM  `announced_pu_results`as a right JOIN `polling_unit` as p on a.polling_unit_uniqueid=p.polling_unit_id where p.lga_id='$selectedLGA' group by a.polling_unit_uniqueid  order by a.polling_unit_uniqueid ";
             // Execute query
+            $total=0;
             $result = $conn->query($sql);  
             if ($result->num_rows > 0) {
                 // Output data of each row
@@ -57,35 +60,44 @@ if(isset($_POST['lga'])){
                         $result_no = $conn->query($sql_no);
                         if ($result_no->num_rows > 0) {
                             $row = $result_no->fetch_assoc();
-
-    $no = $row["party_score"];
+                        $no = $row["party_score"];
+                        $temp_name='Total_'.$party_abbr[$data];
+                            $$temp_name+=$no;
                         }
 
                          ?>
                          <td><?=$no?></td>
                          <?php
+
+                        $total+=$no;
                     }
-
-                    
-                    
                     ?>
-
                 </tr>
-                    
+                                   
                     <?php
 
                 }
             } else {
                 echo "0 results";
             }
-
-
             ?>
+            <tr>
+                    <th><h1>#</h1></th>
+                    <th><h1>Total</h1></th>
+                    <?php
+                    for($data=0;$data<count($party_abbr);$data++)
+                    {
+                        $temp_name='Total_'.$party_abbr[$data];
+                        ?><th><h1><?=$$temp_name ?></h1></th><?php
+                    }
+                    ?>
+                </tr>
+
 
                             </tbody>
         </table>
 
-
+<h1>Total Vote: <?= $total     ?></h1>
 
 
 
